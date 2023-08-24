@@ -1,10 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Linking, StyleSheet, ScrollView, ActivityIndicator, Alert, FlatList } from 'react-native';
-import SecureStorage from 'react-native-sensitive-info'; // Example secure storage library
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, FlatList } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import axios from 'axios';
-import QRCodeItem from './QRCodeItem'; // My QR code list item component
 
 const API_BASE_URL = 'http://192.168.1.67:8080';
 
@@ -43,7 +41,7 @@ const App = () => {
   const loadGeneratedQRCodes = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://192.168.1.67:8080/qrcodes');
+      const response = await axios.get(`${API_BASE_URL}/qrcodes`);
       setGeneratedQRCodes(response.data);
     } catch(error) {
         console.error('Error loading generated QR codes from server:', error);
@@ -54,22 +52,8 @@ const App = () => {
   };
 
   const renderItem = ({ item }) => (
-    <QRCodeItem qrcode={item} />
+    <Text>{item}</Text>
   );
-
-  // Store sensitive data securely
-  const storeSensitiveData = async (key, value) => {
-    await SecureStorage.setItem(key, value, {
-      sharedPreferencesName: 'mySharedPrefs', // Android-specific
-      keychainService: 'myKeychain' // iOS-specific
-    });
-  };
-
-  // Retrive sensitive data securely
-  const getSensitiveData = async (key) => {
-    const value = await SecureStorage.getItem(key);
-    return value;
-  };
 
   return (
     <View style={styles.container}>
@@ -92,11 +76,12 @@ const App = () => {
             <Text style={styles.processButtonText}>Process QR Code</Text>
           </TouchableOpacity>
           <Text style={styles.qrCodesTitle}>QR Codes read:</Text>
-          <ScrollView style={styles.qrCodesList}>
-            {generatedQRCodes.map((qrcode, index) => (
-              <Text key={index}>{qrcode}</Text>
-            ))}
-          </ScrollView>
+          <FlatList 
+            data={generatedQRCodes}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+            style={styles.qrCodesList}
+          />
         </View>
     </View>
   );
@@ -105,18 +90,8 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  flatListContainer: {
-    paddingHorizontal: 10, // Add horizontal padding
-    paddingTop: 10, // Add top padding
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'space-between',
+    padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
   },
   topContent: {
     padding: 20,
@@ -140,7 +115,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   qrCodesList: {
-    maxHeight: 150, // Limit the height of the QR codes list
+    maxHeight: 150, 
   },
 });
 
