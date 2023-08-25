@@ -10,7 +10,13 @@ const App = () => {
   const qrCodeScannerRef = useRef(null);
   const [scannedLink, setScannedLink] = useState("");
   const [generatedQRCodes, setGeneratedQRCodes] = useState([]);
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
+
+  // Função utilitária para mostrar um erro comum com um Alert
+  const showErrorAlert = (message) => {
+    console.error('Error:', message);
+    Alert.alert('Error', message);
+  }
 
   useEffect(() => {
     loadGeneratedQRCodes();
@@ -25,11 +31,10 @@ const App = () => {
           console.log('Data sent to server for QR code generation');
           loadGeneratedQRCodes();
         } else {
-          console.log('Failed to send data to server for QR code generation');
+          showErrorAlert('Failed to send data to server for QR code generation');
         }
       } catch (error) {
-        console.error('Error sending data to server for QR code generation:', error);
-        Alert.alert('Error', 'Failed to generate QR code. Please try again later.');
+        showErrorAlert('Failed to generate QR code. Please try again later.');
       } finally {
         setLoading(false);
         setScannedLink("");
@@ -44,8 +49,7 @@ const App = () => {
       const response = await axios.get(`${API_BASE_URL}/qrcodes`);
       setGeneratedQRCodes(response.data);
     } catch(error) {
-        console.error('Error loading generated QR codes from server:', error);
-        Alert.alert('Error', 'Failed to load generated QR codes. Please try again later.');
+        showErrorAlert('Failed to load generated QR codes. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -63,7 +67,6 @@ const App = () => {
         flashMode={RNCamera.Constants.FlashMode.off}
         reactivateTimeout={1000}    
       />
-      {/* Loading Indicator */}
       {loading && <ActivityIndicator size="large" color="#0277BD" />}
         <View style={styles.topContent}>
           <Text>{scannedLink}</Text>
