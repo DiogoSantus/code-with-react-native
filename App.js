@@ -4,7 +4,7 @@ import { RNCamera } from 'react-native-camera';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://192.168.1.67:8080';
+const API_BASE_URL = 'http://172.29.48.1:8080';
 
 const App = () => {
   const qrCodeScannerRef = useRef(null);
@@ -69,7 +69,7 @@ const App = () => {
       />
       {loading && <ActivityIndicator size="large" color="#0277BD" />}
         <View style={styles.topContent}>
-          <Text>{scannedLink}</Text>
+          <Text style={styles.scannedLinkText}>{scannedLink}</Text>
         </View>
         <View style={styles.bottomContent}>
           <TouchableOpacity
@@ -78,7 +78,7 @@ const App = () => {
           >
             <Text style={styles.processButtonText}>Process QR Code</Text>
           </TouchableOpacity>
-          <Text style={styles.qrCodesTitle}>QR Codes read:</Text>
+          <Text style={styles.qrCodesTitle}>QR Codes Read:</Text>
           <FlatList 
             data={generatedQRCodes}
             renderItem={renderItem}
@@ -93,28 +93,38 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: '#EFEFEF',
   },
   topContent: {
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  scannedLinkText: {
+    fontSize: 16.
   },
   bottomContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
   },
   processButton: {
-    padding: 12,
     backgroundColor: "#0277BD",
+    padding: 12,
     marginTop: 20,
     alignSelf: "center",
+    borderRadius: 5,
   },
   processButtonText: {
     color: "#FFFFFF",
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   qrCodesTitle: {
     marginTop: 20,
     fontWeight: 'bold',
+    fontSize: 18,
   },
   qrCodesList: {
     maxHeight: 150, 
